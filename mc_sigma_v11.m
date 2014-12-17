@@ -2,7 +2,7 @@ function s = mc_sigma_v11(X, rho, ejbar, alpha, N1, N, MC, graphs, eps)
     %v5 begun 5/24
     %v10 restructed error catching, removed unnecessary variables
     %v10 removed tX and tp1X
-    %Removing for loops to increase code speed.
+    %v11 Removed for loops to increase code speed.
 
 %%----------------------------------------------%%       
 %%Begin mc_sigma function-----------------------%%
@@ -78,8 +78,8 @@ function s = mc_sigma_v11(X, rho, ejbar, alpha, N1, N, MC, graphs, eps)
                 end
         end
         
-        sig2v = (DELTALnVj - expmuv(size(DELTALnVj,2),1)).^2;    
-        denom = [1:size(DELTALnVj,2)];
+        sig2v = (DELTALnVj - expmuv(size(DELTALnVj,1),1)).^2;    
+        denom = [1:size(DELTALnVj,1)]';
         expsig2v = cumsum(sig2v)./denom;
 
         s = expsig2v(MC,1);
@@ -88,29 +88,29 @@ function s = mc_sigma_v11(X, rho, ejbar, alpha, N1, N, MC, graphs, eps)
             figure('OuterPosition', [0,30,1280,760]);
             
             subplot(2,4,1);
-            hold on
-            hist(Vt*rho/omega0,MC/50);
+            hist(Vt*rho/omega0,50);
             title('Present Value')
+            hold on
             line([mean(Vt*rho/omega0) mean(Vt*rho/omega0)],[0,100], 'LineWidth', 0.9, 'Color', [1 0 1])
             xminxmax =xlim;
             
             subplot(2,4,5);
-            hold on
-            hist(Vtp1*rho/omega1,MC/50);
+            hist(Vtp1*rho/omega1,50);
             title('Present Value t + 1')
+            hold on
             xlim([xminxmax(1),xminxmax(2)])
             line([mean(Vtp1*rho/omega1) mean(Vtp1*rho/omega1)],[0,100], 'LineWidth', 0.9, 'Color', [1 0 1])
      
             subplot(2,4,2);
             hold on
-            hist(Vt,MC/50);
+            hist(Vt,50);
             title('Non-logged Value at t')
             line([mean(Vt) mean(Vt)],[0 100], 'LineWidth', 0.9, 'Color', [1 0 1])
             xminxmax = xlim;
             
             subplot(2,4,6);  
             hold on
-            hist(Vtp1,MC/50);
+            hist(Vtp1,50);
             title('Non-logged Value at t+1')
             xlim([xminxmax(1),xminxmax(2)])
             line([mean(Vtp1) mean(Vtp1)],[0 100], 'LineWidth', 0.9, 'Color', [1 0 1])
@@ -124,7 +124,7 @@ function s = mc_sigma_v11(X, rho, ejbar, alpha, N1, N, MC, graphs, eps)
             
             subplot(2,4,7);
             hold on
-            hist(DELTALnVj,MC/50);
+            hist(DELTALnVj,50);
             title('Delta Log Diff of Values')
             line([mean(DELTALnVj) mean(DELTALnVj)],[0 100], 'LineWidth', 0.9, 'Color', [1 0 1])
             

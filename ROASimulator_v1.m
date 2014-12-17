@@ -8,6 +8,8 @@
 %-------------------------------------------------------------------------%
 %---Written by Gregory M. Astill, Nov. 14, 2014, for Matlab---------------%
 %-------------------------------------------------------------------------%
+profile off;
+profile on;
 
 graphonoff = 0;
 N = 100;                        %Number of distribution draws from data
@@ -46,3 +48,6 @@ rho = irho/100;
         end
     end
 end
+
+profile off;
+profile viewer;

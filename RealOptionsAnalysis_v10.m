@@ -43,25 +43,29 @@ Hstar = 0;                      %Set initial value of modified trigger
 %-----------------------Data----------------------------------------------%
 
 %Manage results in excel
-resultsfile = 'C:\Users\Greg\Google Drive\WSU_F12\ExAnteTechAdoptionUnderUncertainty\Fall2014RevisionUsingCowleyData\trials1.xlsx';
-resultsopen = 0;                %Records whether trials1 is open in excel
-try 
-    Excel = actxGetRunningServer('Excel.Application');
-    Workbooks = Excel.Workbooks;
-        for ii = 1:Workbooks.Count
-            if strcmp(resultsfile,Workbooks.Item(ii).FullName)
-                resultsopen = 1;    %If trials1 is open, close it using xls_check_if_open
-                                    %and reopen it at the bottom of this file
-            end
-        end
-    xls_check_if_open(resultsfile,'close');
-catch MExc
-    Excel = actxGetRunningServer('Excel.Application');
-    Workbooks = Excel.Workbooks;
-end
+% resultsfile = 'C:\Users\Greg\Google Drive\WSU_F12\ExAnteTechAdoptionUnderUncertainty\Fall2014RevisionUsingCowleyData\trials1.xlsx';
+% resultsopen = 0;                %Records whether trials1 is open in excel
+% try 
+%     Excel = actxGetRunningServer('Excel.Application');
+%     Workbooks = Excel.Workbooks;
+%         for ii = 1:Workbooks.Count
+%             if strcmp(resultsfile,Workbooks.Item(ii).FullName)
+%                 resultsopen = 1;    %If trials1 is open, close it using xls_check_if_open
+%                                     %and reopen it at the bottom of this file
+%             end
+%         end
+%     xls_check_if_open(resultsfile,'close');
+% catch MExc
+%     Excel = actxGetRunningServer('Excel.Application');
+%     Workbooks = Excel.Workbooks;
+% end
     
-trial = xlsread(resultsfile, 'B1:C1');
+% trial = xlsread(resultsfile, 'B1:C1');
                                 %Appends results from a single run of this code into an excel workbook.
+load OutputFileNumber.mat;
+OFN = OFN + 1;
+savefile = 'OutputFileNumber.mat';
+save(savefile, 'OFN');
 
 datafile = 'C:\Users\Greg\Google Drive\ROA&LearningSpillovers\CowleyData\CowleyDataOut.csv';
 datafile2 = 'C:\Users\Greg\Google Drive\ROA&LearningSpillovers\CowleyData\CowleyDataOut_HeterogeneityOfEnvironmentalValuation.csv';
@@ -102,7 +106,7 @@ trialmat = zeros(J*SIM,23);     %Output data
     for sim=1:SIM
         
         d = ones(J*SIM,1);
-        trialmat(:,1) = (trial(1,1)+1);          %Number of time this code was run
+        trialmat(:,1) = OFN;          %Number of time this code was run
         uncertain = var(Kout);                  %This is defined on line 29 in mc_sigma_v7.m
         trialmat(:,3:6) = d*[K, expR, rho, uncertain];
         trialmat(:,14) = sEnvR;               %Spread of AD evaluation among all periods
@@ -169,24 +173,32 @@ trialmat = zeros(J*SIM,23);     %Output data
         
                                                %Calculate new adoption ratio
         ejbar = mean(trialmat((sim-1)*J+1:(sim-1)*J+J,12));
+        if ejbar == 1
+            break
+        end
+       
 %         disp(' ');
 %         disp([sim, ' simulations']);
         
     
     end
 
-AA = sprintf('A%d', alpha*(SIM*J) + trial(1,2) + 1);
-OO = sprintf('W%d', alpha*(SIM*J) + SIM*J + trial(1,2));
-trialrange = sprintf('%s:%s', AA, OO);
+% AA = sprintf('A%d', alpha*(SIM*J) + trial(1,2) + 1);
+% OO = sprintf('W%d', alpha*(SIM*J) + SIM*J + trial(1,2));
+% trialrange = sprintf('%s:%s', AA, OO);
 %xlswrite('C:\Users\Greg\Google Drive\WSU_F12\ExAnteTechAdoptionUnderUncertainty\Fall2014RevisionUsingCowleyData\trials1.xlsx',...
 %    trialmat,trialrange)
-xlswrite(resultsfile,trialmat,trialrange);
+% xlswrite(resultsfile,trialmat,trialrange);
+
+
+savefile = sprintf('ROA_Results%d.csv', OFN);
+csvwrite(savefile, trialmat);
 
 %out
 
-    if resultsopen == 1                         %Reopen trials1 in Excel
-        winopen(resultsfile);
-    end
+%     if resultsopen == 1                         %Reopen trials1 in Excel
+%         winopen(resultsfile);
+%     end
 
 %print(fig,filename,'-dpng','-r300')
 
